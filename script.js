@@ -40,6 +40,7 @@
   const viewPadPct = $('#viewPadPct');
 
   const crosshair = $('#crosshair'), markers = $('#markers');
+  const showArea = $('#showArea'); // <-- Add this line
   const fitAll = $('#fitAll'), zoomIn = $('#zoomIn'), zoomOut = $('#zoomOut'),
         resetView = $('#resetView'), exportBtn = $('#export'), resetLabelPos = $('#resetLabelPos');
 
@@ -70,6 +71,7 @@
     xLabel: xAxisLabel.value.trim() || 'x',
     yLabel: yAxisLabel.value.trim() || 'y',
     showCrosshair: false, showMarkers: true,
+    showArea: true, // <-- Add this line
 
     // NEW: draggable label offsets (screen-space, px)
     labelOffsetX: {dx:0, dy:0},
@@ -497,7 +499,8 @@
     if (state.graphType==='line'){
       const [xa,xb] = lineSegmentRange();
       const {posPoly,negPoly} = areaPolysLine(xa,xb);
-      drawPoly(posPoly,getVar('--pos')); drawPoly(negPoly,getVar('--neg'));
+      if (state.showArea) { // <-- Only draw area if enabled
+      drawPoly(posPoly,getVar('--pos')); drawPoly(negPoly,getVar('--neg'));}
       // Draw extended line across view for readability
       const [xl,xr] = xWorldSpan(); 
       drawLineSegment(xl, xr);
@@ -512,7 +515,8 @@
       });
     } else {
       const {posPoly,negPoly} = areaPolysData();
-      drawPoly(posPoly,getVar('--pos')); drawPoly(negPoly,getVar('--neg'));
+      if (state.showArea) { // <-- Only draw area if enabled
+      drawPoly(posPoly,getVar('--pos')); drawPoly(negPoly,getVar('--neg'));}
       drawPolyline();
       drawInterceptMarkersData();
 
@@ -643,6 +647,11 @@
     state.labelOffsetY = {dx:0,dy:0};
     render();
   });
+
+  showArea.addEventListener('change', ()=>{
+  state.showArea = showArea.checked;
+  render();
+});
 
   // ---------- Mouse interactions (pan/zoom + label dragging) ----------
   function withinRect(r, x, y){ return x>=r.x && x<=r.x+r.w && y>=r.y && y<=r.y+r.h; }
