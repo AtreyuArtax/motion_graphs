@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Graph — Line / Data Entry</title>
+  <meta name="color-scheme" content="light dark" />
+  <!-- External stylesheet extracted from the original document -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>Interactive Graph — Line / Data Entry</h1>
+
+    <div class="layout">
+      <!-- Controls -->
+      <div class="panel">
+        <h2>Graph Type</h2>
+        <div class="toolbar">
+          <span class="pill">Mode:
+            <button id="modeLine" class="primary">Line</button>
+            <button id="modeData">Data Entry</button>
+          </span>
+        </div>
+
+        <!-- LINE CONTROLS -->
+        <div id="lineControls">
+          <h2 style="margin-top:14px">Line &amp; Domain</h2>
+          <div class="grid2">
+            <div class="field">
+              <div class="label">Slope (m)</div>
+              <input id="slope" type="number" step="0.1" value="1.2" />
+              <div class="muted small">y = m (x - h)</div>
+            </div>
+            <div class="field">
+              <div class="label">Horizontal shift (h)</div>
+              <input id="shift" type="number" step="0.1" value="0.0" />
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:8px">
+            <div class="label">Segment mode (Line)</div>
+            <div class="mode">
+              <label><input type="radio" name="segmode" value="full" checked /> Full View</label>
+              <label><input type="radio" name="segmode" value="axes" /> Clip to Axes</label>
+              <label><input type="radio" name="segmode" value="fixed" /> Domain [x<sub>min</sub>, x<sub>max</sub>]</label>
+            </div>
+            <div class="grid2" id="fixedRow" style="margin-top:8px;display:none">
+              <div class="field">
+                <div class="label">x-min</div>
+                <input id="xMin" type="number" step="0.1" value="0" />
+              </div>
+              <div class="field">
+                <div class="label">x-max</div>
+                <input id="xMax" type="number" step="0.1" value="10" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DATA CONTROLS -->
+        <div id="dataControls" style="display:none">
+          <h2 style="margin-top:14px">Data Entry (points plotted in order)</h2>
+          <div class="grid3">
+            <div class="field">
+              <div class="label">x</div>
+              <input id="px" type="number" step="0.1" value="0" />
+            </div>
+            <div class="field">
+              <div class="label">y</div>
+              <input id="py" type="number" step="0.1" value="0" />
+            </div>
+            <div class="field" style="align-self:end">
+              <button id="addPoint" class="primary">Add Point</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button id="undoPoint">Undo</button>
+            <button id="clearPoints">Clear</button>
+            <button id="fitData">Fit Data</button>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <div class="label">Paste CSV (x,y per line)</div>
+            <textarea id="csvBox" placeholder="Example:
+0,0
+2,3
+5,-1
+8,4"></textarea>
+            <div class="toolbar" style="margin-top:8px">
+              <button id="importCSV">Import CSV</button>
+            </div>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <div class="label">Current points (in order)</div>
+            <div id="pointList" class="small mono muted">—</div>
+          </div>
+        </div>
+        
+        <hr style="border-top:1px solid var(--panel-border); margin:14px 0;" />
+        
+        <!-- Custom Axes Section -->
+        <h2>Custom Axes</h2>
+        <div class="field">
+          <label class="check small"><input id="customAxes" type="checkbox" /><span>Enable custom axes</span></label>
+        </div>
+
+        <div id="customAxesSection" style="display:none; margin-top:8px;">
+          <div class="grid2">
+            <div class="field">
+              <div class="label">X-Axis Min</div>
+              <input id="xAxisMin" type="number" step="0.1" value="0" />
+            </div>
+            <div class="field">
+              <div class="label">X-Axis Max</div>
+              <input id="xAxisMax" type="number" step="0.1" value="5" />
+            </div>
+          </div>
+          <div class="grid2" style="margin-top:8px">
+            <div class="field">
+              <div class="label">X-Axis Increment</div>
+              <input id="xAxisInc" type="number" min="0.000001" step="0.1" value="1" />
+            </div>
+            <div class="field">
+              <div class="label">Label every N<sup>th</sup> tick</div>
+              <input id="xLabelNth" type="number" min="1" step="1" value="1" />
+            </div>
+          </div>
+          <div class="grid3" style="margin-top:8px">
+            <label class="check small"><input id="xUseTickIndex" type="checkbox" /><span>Use tick index range</span></label>
+            <div class="field"><div class="label">Tick start index</div><input id="xTickIdxMin" type="number" step="1" value="0" /></div>
+            <div class="field"><div class="label">Tick end index</div><input id="xTickIdxMax" type="number" step="1" value="5" /></div>
+          </div>
+
+          <div class="field" style="margin-top:8px">
+            <div class="label">View padding (%)</div>
+            <input id="viewPadPct" type="number" min="0" max="40" step="1" value="8" />
+            <div class="small muted">Adds margin so ticks/labels aren’t flush to the border.</div>
+          </div>
+
+          <div class="field" style="margin-top:8px">
+            <div class="label">X-Axis Label</div>
+            <input id="xAxisLabel" type="text" value="s" />
+          </div>
+          
+          <hr style="border-top:1px solid var(--panel-border); margin:14px 0;" />
+          
+          <div class="grid2">
+            <div class="field">
+              <div class="label">Y-Axis Min</div>
+              <input id="yAxisMin" type="number" step="0.1" value="-10" />
+            </div>
+            <div class="field">
+              <div class="label">Y-Axis Max</div>
+              <input id="yAxisMax" type="number" step="0.1" value="10" />
+            </div>
+          </div>
+          <div class="grid2" style="margin-top:8px">
+            <div class="field">
+              <div class="label">Y-Axis Increment</div>
+              <input id="yAxisInc" type="number" min="0.000001" step="0.1" value="1" />
+            </div>
+            <div class="field">
+              <div class="label">Label every N<sup>th</sup> tick</div>
+              <input id="yLabelNth" type="number" min="1" step="1" value="1" />
+            </div>
+          </div>
+          <div class="grid3" style="margin-top:8px">
+            <label class="check small"><input id="yUseTickIndex" type="checkbox" /><span>Use tick index range</span></label>
+            <div class="field"><div class="label">Tick start index</div><input id="yTickIdxMin" type="number" step="1" value="-2" /></div>
+            <div class="field"><div class="label">Tick end index</div><input id="yTickIdxMax" type="number" step="1" value="10" /></div>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <div class="label">Y-Axis Label</div>
+            <input id="yAxisLabel" type="text" value="m/s" />
+          </div>
+        </div>
+        
+        <div class="grid2" style="margin-top:8px">
+          <div class="field">
+            <label class="check small"><input id="crosshair" type="checkbox" /><span>Show crosshair &amp; coords</span></label>
+          </div>
+          
+          <div class="field">
+            <label class="check small"><input id="markers" type="checkbox" checked /><span>Show intercept markers</span></label>
+          </div>
+        </div>
+
+        <h2 style="margin-top:14px">Navigation</h2>
+        <div class="toolbar">
+          <button id="fitAll">Fit All</button>
+          <button id="zoomIn">Zoom In</button>
+          <button id="zoomOut">Zoom Out</button>
+          <button id="resetView">Reset View</button>
+          <button id="export" class="primary">Export PNG</button>
+          <button id="resetLabelPos">Reset Label Positions</button>
+        </div>
+
+        <div class="muted small" style="margin-top:8px">
+          Tip: <b>Scroll / pinch</b> to zoom around mouse. <b>Hold Space</b> and drag to pan.
+        </div>
+      </div>
+
+      <!-- Canvas + readouts -->
+      <div>
+        <div class="stage"><canvas id="canvas"></canvas></div>
+        <div class="legend">
+          <span class="chip"><span class="dot pos"></span> Positive area</span>
+          <span class="chip"><span class="dot neg"></span> Negative area</span>
+          <div class="readouts small">
+            <span class="readout">Graph: <span id="ro_gtype" class="mono accent">Line</span></span>
+            <span class="readout">m = <span id="ro_m" class="mono accent">1.2</span></span>
+            <span class="readout">h = <span id="ro_h" class="mono accent">0.0</span></span>
+            <span class="readout">Segment: <span id="ro_seg" class="mono">Full View</span></span>
+            <span class="readout">x-int = <span id="ro_xint" class="mono">—</span> <span id="ro_xu"></span></span>
+            <span class="readout">y-int = <span id="ro_yint" class="mono">—</span> <span id="ro_yu"></span></span>
+            <span class="readout">A<sub>+</sub> = <span id="ro_ap" class="mono">0</span> <span id="ro_units_simple"></span> <span class="muted">(raw: <span id="ro_units_raw"></span>)</span></span>
+            <span class="readout">A<sub>-</sub> = <span id="ro_an" class="mono">0</span> <span id="ro_units_simple2"></span></span>
+            <span class="readout">A (net) = <span id="ro_net" class="mono">0</span> <span id="ro_units_simple3"></span></span>
+            <span id="ro_cursor" class="readout" style="display:none">x=<span class="mono" id="cx">0</span>, y=<span class="mono" id="cy">0</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- External script extracted from the original document -->
+  <script src="script.js"></script>
+</body>
+</html>
